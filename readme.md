@@ -15,7 +15,6 @@ while blackboard() == RUNNING:
 
 ````
 
-Believe me, it's valid python code.
 
 ### Import from behave:
 
@@ -247,5 +246,3 @@ count 5
 [if 0 < x < 10, count from 1] -> Success
 state = Success
 ````
-
-Cool?
