@@ -147,7 +147,10 @@ state = Success
 
 ## Wait, did I mention debugger?
 
-To debug the tree, all you need to do are define a debugger function, and call `tree.debug(..)`.
+To debug the tree, you need to:
+
+* Define a debugger function
+* Call `tree.debug(debugger, arg1, arg2...)` instead of `tree(arg1, arg2...)`.
 
 ````
 def my_debugger(node, state):
