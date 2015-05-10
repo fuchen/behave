@@ -155,7 +155,7 @@ To debug the tree, you need to:
 
 ````
 def my_debugger(node, state):
-    print "[%s] -> %s" % (node, state)
+    print "[%s] -> %s" % (node.name, state)
 
 bb = tree.debug(my_debugger, 5) # Creates an blackboard with debugger enabled
 
