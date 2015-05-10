@@ -53,6 +53,15 @@ class DebugBlackboard(Blackboard):
 class BeNode(object):
     def __init__(self):
         self.desc = None
+        self._name = None
+
+    @property
+    def name(self):
+        return self._name or self.__class__.__name__
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     def blackboard(self, *args, **kwargs):
         return Blackboard(self, *args, **kwargs)
@@ -86,6 +95,16 @@ class BeAction(BeNode):
         super(BeAction, self).__init__()
         self.func = func
 
+    @BeNode.name.getter
+    def name(self):
+        if self._name:
+            return self._name
+        func = self.func
+        if func and hasattr(func, "__name__"):
+            return func.__name__
+        else:
+            return self.__class__.__name__
+
     def copy_from(self, other):
         super(BeAction, self).copy_from(other)
         self.func = other.func
@@ -107,6 +126,16 @@ class BeGeneratorAction(BeNode):
     def __init__(self, generatorfunc=None):
         super(BeGeneratorAction, self).__init__()
         self.generatorfunc = generatorfunc
+
+    @BeNode.name.getter
+    def name(self):
+        if self._name:
+            return self._name
+        func = self.generatorfunc
+        if func and hasattr(func, "__name__"):
+            return func.__name__
+        else:
+            return self.__class__.__name__
 
     def copy_from(self, other):
         super(BeGeneratorAction, self).copy_from(other)
@@ -133,6 +162,16 @@ class BeCondition(BeNode):
     def __init__(self, func=None):
         super(BeCondition, self).__init__()
         self.func = func
+
+    @BeNode.name.getter
+    def name(self):
+        if self._name:
+            return self._name
+        func = self.func
+        if func and hasattr(func, "__name__"):
+            return func.__name__
+        else:
+            return self.__class__.__name__
 
     def copy_from(self, other):
         super(BeCondition, self).copy_from(other)
@@ -253,6 +292,17 @@ class BeDecorated(BeNode):
         super(BeDecorated, self).__init__()
         self.decorator = decorator
         self.node = node
+
+    @BeNode.name.getter
+    def name(self):
+        if self._name:
+            return self._name
+        decorator = self.decorator
+        node = self.node
+        if node and decorator and hasattr(decorator, "__name__"):
+            return decorator.__name__ + "*" + node.name
+        else:
+            return self.__class__.__name__
 
     def copy_from(self, other):
         super(BeDecorated, self).copy_from(other)
