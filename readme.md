@@ -9,8 +9,8 @@ tree = (
     | failer ** repeat(3) ** doomed
 )
 
-blackboard = tree(10)
-while blackboard() == RUNNING:
+bb = tree.blackboard(10)
+while bb.tick() == RUNNING:
     pass
 
 ````
@@ -90,15 +90,17 @@ decorated_2 = succeeder(doomed)
 decorated_3 = repeat(10)(count_from_1)
 ````
 
-Above code works, but chaining style is better:
+For readability reason, you can also use chaining style:
 
 ````
 from behave import repeat, forever, succeeder, failer
 
-decorated_1 = forever ** count_from_1
-decorated_2 = succeeder ** doomed
-decorated_3 = repeat(10) ** count_from_1
-decorated_4 = failer ** repeat(10) ** count_from_1
+composite_decorator = repeat(3) * repeat(2)   # It's identical to repeat(6)
+
+decorated_1 = forever * count_from_1
+decorated_2 = succeeder * doomed
+decorated_3 = repeat(10) * count_from_1
+decorated_4 = failer * repeat(10) * count_from_1
 ````
 
 ### Put everything together
@@ -114,13 +116,13 @@ tree = (
 Every node is a tree itself. And a big tree is composed by many sub trees. To iterate the tree:
 
 ````
-blackboard = tree(5) # Creates an instance of tree.
+bb = tree.blackboard(5) # Creates an run instance
 
 # Now let the tree do its job, till job is done
-state = blackboard()
+state = bb.tick()
 print "state = %s\n" % state
 while state == RUNNING:
-    state = blackboard()
+    state = bb.tick()
     print "state = %s\n" % state
 assert state == SUCCESS or state == FAILURE
 ````
@@ -149,19 +151,19 @@ state = Success
 To debug the tree, you need to:
 
 * Define a debugger function
-* Call `tree.debug(debugger, arg1, arg2...)` instead of `tree(arg1, arg2...)`.
+* Create blackboard by calling `tree.debug(debugger, arg1, arg2...)` instead of `tree.blackboard(arg1, arg2...)`.
 
 ````
 def my_debugger(node, state):
     print "[%s] -> %s" % (node, state)
 
-blackboard = tree.debug(my_debugger, 5) # Creates an instance of tree, with debugger enabled
+bb = tree.debug(my_debugger, 5) # Creates an blackboard with debugger enabled
 
 # Now let the tree do its job, till job is done
-state = blackboard()
+state = bb.tick()
 print "state = %s\n" % state
 while state == RUNNING:
-    state = blackboard()
+    state = bb.tick()
     print "state = %s\n" % state
 assert state == SUCCESS or state == FAILURE
 ````
