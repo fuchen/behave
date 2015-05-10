@@ -171,42 +171,42 @@ assert state == SUCCESS or state == FAILURE
 Output:
 
 ````
-[<behave.core.BeCondition object at 0x02145410>] -> Failure
-[<behave.core.BeSeqence object at 0x021E7DF0>] -> Failure
-[<behave.core.BeCondition object at 0x021E7B70>] -> Success
+[ is_greater_than_10 ] -> Failure
+[ BeSeqence ] -> Failure
+[ is_between_0_and_10 ] -> Success
 count 1
-[<behave.core.BeGeneratorAction object at 0x021E7470>] -> Running
-[<behave.core.BeSeqence object at 0x021E7E10>] -> Running
-[<behave.core.BeSelect object at 0x021E7E30>] -> Running
+[ count_from_1 ] -> Running
+[ BeSeqence ] -> Running
+[ BeSelect ] -> Running
 state = Running
 
 count 2
-[<behave.core.BeGeneratorAction object at 0x021E7470>] -> Running
-[<behave.core.BeSeqence object at 0x021E7E10>] -> Running
-[<behave.core.BeSelect object at 0x021E7E30>] -> Running
+[ count_from_1 ] -> Running
+[ BeSeqence ] -> Running
+[ BeSelect ] -> Running
 state = Running
 
 count 3
-[<behave.core.BeGeneratorAction object at 0x021E7470>] -> Running
-[<behave.core.BeSeqence object at 0x021E7E10>] -> Running
-[<behave.core.BeSelect object at 0x021E7E30>] -> Running
+[ count_from_1 ] -> Running
+[ BeSeqence ] -> Running
+[ BeSelect ] -> Running
 state = Running
 
 count 4
-[<behave.core.BeGeneratorAction object at 0x021E7470>] -> Running
-[<behave.core.BeSeqence object at 0x021E7E10>] -> Running
-[<behave.core.BeSelect object at 0x021E7E30>] -> Running
+[ count_from_1 ] -> Running
+[ BeSeqence ] -> Running
+[ BeSelect ] -> Running
 state = Running
 
 count 5
-[<behave.core.BeGeneratorAction object at 0x021E7470>] -> Success
-[<behave.core.BeSeqence object at 0x021E7E10>] -> Success
-[<behave.core.BeSelect object at 0x021E7E30>] -> Success
+[ count_from_1 ] -> Success
+[ BeSeqence ] -> Success
+[ BeSelect ] -> Success
 state = Success
 
 ````
 
-Em... Awful. Let put some comments into the tree:
+Too messy? Let put some comments into the tree:
 
 ````
 tree = (
@@ -227,24 +227,24 @@ def my_debugger(node, state):
 Try it again:
 
 ````
-[if x > 10, wow] -> Failure
+[ if x > 10, wow ] -> Failure
 count 1
-[if 0 < x < 10, count from 1] -> Running
+[ if 0 < x < 10, count from 1 ] -> Running
 state = Running
 
 count 2
-[if 0 < x < 10, count from 1] -> Running
+[ if 0 < x < 10, count from 1 ] -> Running
 state = Running
 
 count 3
-[if 0 < x < 10, count from 1] -> Running
+[ if 0 < x < 10, count from 1 ] -> Running
 state = Running
 
 count 4
-[if 0 < x < 10, count from 1] -> Running
+[ if 0 < x < 10, count from 1 ] -> Running
 state = Running
 
 count 5
-[if 0 < x < 10, count from 1] -> Success
+[ if 0 < x < 10, count from 1 ] -> Success
 state = Success
 ````
