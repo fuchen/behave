@@ -119,6 +119,24 @@ def test_action_can_be_running_and_then_success():
     state = SUCCESS
     assert bb.tick() == SUCCESS
 
+def test_generator_action_can_be_running_then_succeed():
+    @action
+    def act():
+        yield
+
+    bb = act.blackboard()
+    assert bb.tick() == RUNNING
+    assert bb.tick() == SUCCESS
+
+def test_generator_action_can_be_running_then_fail():
+    @action
+    def act():
+        yield
+        yield FAILURE
+
+    bb = act.blackboard()
+    assert bb.tick() == RUNNING
+    assert bb.tick() == FAILURE
 
 # condition
 
