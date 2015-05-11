@@ -248,3 +248,9 @@ count 5
 [ if 0 < x < 10, count from 1 ] -> Success
 state = Success
 ````
+
+## Run Tests with [nose](https://nose.readthedocs.org/en/latest/)
+
+````
+nosetests test
+````

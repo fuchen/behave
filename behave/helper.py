@@ -1,10 +1,33 @@
 # coding=utf-8
 
-from __future__ import absolute_import
-from behave.core import BeGeneratorAction, BeAction, BeCondition, BeDecorator, \
-                        SUCCESS, FAILURE, RUNNING
+from .core import BeNode, BeGeneratorAction, BeAction, BeCondition, \
+                        BeSequence, BeSelect, BeDecorator, SUCCESS
 import inspect
 from functools import wraps
+
+
+# Functions for testing
+
+def is_node(node):
+    return isinstance(node, BeNode)
+
+def is_sequence(node):
+    return isinstance(node, BeSequence)
+
+def is_selector(node):
+    return isinstance(node, BeSelect)
+
+def is_decorator(node):
+    return isinstance(node, BeDecorator)
+
+def is_condition(node):
+    return isinstance(node, BeCondition)
+
+def is_action(node):
+    return isinstance(node, BeAction) or isinstance(node, BeGeneratorAction)
+
+
+# Decorators for tree node definition
 
 def action(f):
     if inspect.isgeneratorfunction(f):
@@ -28,56 +51,9 @@ def generator_decorator(f):
         return iter_func
     return ctor
 
+
 def decorator(f):
     if inspect.isgeneratorfunction(f):
         f = wraps(f)(generator_decorator(f))
     return BeDecorator([f])
-
-
-# decorators
-
-@decorator
-def forever(bb, node):
-    while True:
-        func = bb.new_iterator(node)
-        while func() == RUNNING:
-            yield RUNNING
-
-
-def repeat(count):
-    @decorator
-    def repeat_worker(bb, node):
-        for _ in range(count):
-            func = bb.new_iterator(node)
-            while func() == RUNNING:
-                yield RUNNING
-
-    return repeat_worker
-
-
-@decorator
-def succeeder(bb, node):
-    func = bb.new_iterator(node)
-    while func() == RUNNING:
-        yield RUNNING
-    yield SUCCESS
-
-
-@decorator
-def failer(bb, node):
-    func = bb.new_iterator(node)
-    while func() == RUNNING:
-        yield RUNNING
-    yield FAILURE
-
-
-@decorator
-def not_(bb, node):
-    func = bb.new_iterator(node)
-    x = func()
-    while x == RUNNING:
-        yield x
-        x = func()
-    yield FAILURE if x == SUCCESS else SUCCESS
-
 

@@ -11,13 +11,10 @@ RUNNING = "Running"
 class BehaveException(Exception):
     pass
 
-class IterateFinishedNode(BaseException):
-    pass
-
 def wrap_iterator(iterator):
     def wrapped():
         if wrapped.done:
-            raise IterateFinishedNode()
+            raise BehaveException("Ticking a finished node.")
         x = iterator()
         if x != RUNNING:
             wrapped.done = True
@@ -33,7 +30,18 @@ class Blackboard(object):
         self.tick = self.new_iterator(node)
 
     def new_iterator(self, node):
-        return node.Iterator(self, node)
+        it = node.Iterator(self, node)
+        it.done = False
+        def it_func():
+            if it.done:
+                raise BehaveException("Ticking a finished node.")
+            x = it()
+            if x != RUNNING:
+                it.done = True
+            return x
+
+        return it_func
+
 
 class DebugBlackboard(Blackboard):
     def __init__(self, node, debugger, *args, **kwargs):
@@ -41,7 +49,7 @@ class DebugBlackboard(Blackboard):
         super(DebugBlackboard, self).__init__(node, *args, **kwargs)
 
     def new_iterator(self, node):
-        it = node.Iterator(self, node)
+        it = Blackboard.new_iterator(self, node)
         def wrapper():
             x = it()
             self.debugger(node, x)
@@ -81,7 +89,7 @@ class BeNode(object):
         return BeSelect([self, sibling])
 
     def __rshift__(self, sibling):
-        return BeSeqence([self, sibling])
+        return BeSequence([self, sibling])
 
     def __floordiv__(self, desc):
         c = self.clone()
@@ -110,7 +118,6 @@ class BeAction(BeNode):
         self.func = other.func
 
     class Iterator(object):
-        __slots__ = ["func"]
         def __init__(self, bb, node):
             self.func = partial(node.func, *bb.args, **bb.kwargs)
 
@@ -142,7 +149,6 @@ class BeGeneratorAction(BeNode):
         self.generatorfunc = other.generatorfunc
 
     class Iterator(object):
-        __slots__ = ["generator"]
         def __init__(self, bb, node):
             self.generator = node.generatorfunc(*bb.args, **bb.kwargs)
 
@@ -178,7 +184,6 @@ class BeCondition(BeNode):
         self.func = other.func
 
     class Iterator(object):
-        __slots__ = ["func"]
         def __init__(self, bb, node):
             self.func = partial(node.func, *bb.args, **bb.kwargs)
 
@@ -205,7 +210,6 @@ class BeSelect(BeComposite):
         return BeSelect(children)
 
     class Iterator(object):
-        __slots__ = ["iterations"]
         def __init__(self, bb, node):
             self.iterations = self._make_iterations(bb, node)
 
@@ -231,14 +235,13 @@ class BeSelect(BeComposite):
 
 
 ##############################################################################
-class BeSeqence(BeComposite):
+class BeSequence(BeComposite):
     def __rshift__(self, child):
         children = self.children[:]
         children.append(child)
-        return BeSelect(children)
+        return BeSequence(children)
 
     class Iterator(object):
-        __slots__ = ["iterations"]
         def __init__(self, bb, node, *args, **kwargs):
             self.iterations = self._make_iterations(bb, node)
 
@@ -310,7 +313,6 @@ class BeDecorated(BeNode):
         self.node = other.node
 
     class Iterator(object):
-        __slots__ = ["decorator_instance"]
         def __init__(self, bb, node):
             self.decorator_instance = node.decorator(bb, node.node)
 
