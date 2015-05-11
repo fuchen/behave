@@ -6,7 +6,7 @@ With `behave`, you can define a behavior tree like this:
 tree = (
     is_greater_than_10 >> wow_large_number
     | is_between_0_and_10 >> count_from_1
-    | failer ** repeat(3) ** doomed
+    | failer * repeat(3) * doomed
 )
 
 bb = tree.blackboard(10)
@@ -109,7 +109,7 @@ decorated_4 = failer * repeat(10) * count_from_1
 tree = (
     is_greater_than_10 >> wow_large_number
     | is_between_0_and_10 >> count_from_1
-    | failer ** repeat(3) ** doomed
+    | failer * repeat(3) * doomed
 )
 ````
 
@@ -212,7 +212,7 @@ Too messy? Let put some comments into the tree:
 tree = (
     (is_greater_than_10 >> wow_large_number) // "if x > 10, wow"
     | (is_between_0_and_10 >> count_from_1) // "if 0 < x < 10, count from 1"
-    | failer ** repeat(3) ** doomed // "if x <= 0, doomed X 3, and then fail"
+    | failer * repeat(3) * doomed // "if x <= 0, doomed X 3, and then fail"
 )
 ````
 
